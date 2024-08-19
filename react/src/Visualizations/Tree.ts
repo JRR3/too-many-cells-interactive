@@ -345,19 +345,24 @@ const showToolTip = (
         .selectAll('li.feature-item')
         .data(
             colorScaleKey === 'featureAverage' && activeFeatures.length
-                ? [data.data.featureAverage.average.quantity]
+                ? [data.data.featureAverage.average.quantity,
+                data.data.originalNodeId]
                 : [],
             Math.random
         )
         .join('li')
         .attr('class', 'feature-item')
-        .each(function (d) {
+        .each(function (d, idx) {
             const s = select(this).append('span');
             const strong = s.append('strong');
-            strong.html(`Feature Average: `);
+            if (idx == 0)
+                strong.html(`Feature Average: `);
+            else if (idx == 1)
+                strong.html(`X: `);
             const val = s.append('span');
             val.html(d.toLocaleString());
         });
+
 
     featuresContainer
         .selectAll('li.user-annotation')
