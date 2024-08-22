@@ -55,6 +55,8 @@ import { getFeatureAverage } from './useScale';
 */
 
 const usePrunedTree = (tree: TMCHierarchyDataNode) => {
+
+    console.log(tree);
     const [baseTree, setBaseTree] = useState(tree);
 
     /* action creators */
@@ -582,6 +584,9 @@ const getMadGroups = (values: number[], binCount = 15, maxSize?: number) => {
     const med = median(values)!;
 
     const [min, max] = extent(values.filter(v => v <= (maxSize ?? Infinity)));
+    console.log("min_MAD:", min);
+    console.log("max_MAD:", max);
+    console.log("maxSize:", maxSize ?? Infinity);
 
     // assume that min is less than median...
     const greatestNegativeMadDistance =
@@ -674,7 +679,10 @@ const getFeatureDistributions = (
             plainGroups: getPlainFeatureGroups(dist),
             total: sum(dist) ?? 0,
         };
+
     });
+
+    console.log(distributions);
 
     return distributions;
 };
@@ -700,7 +708,7 @@ const getPlainFeatureGroups = (range: number[]): CumSumBin[] => {
 };
 
 /**
- * Annotate the each node in the tree with raw feature count (per feature),
+ * Annotate each node in the tree with raw feature counts (per feature),
  * average feature count per cell (per feature), and average count of all features
  * @param {TMCHierarchyDataNode} nodes the base tree (not a pruned tree)
  * @param {Array<string>} features the active features
