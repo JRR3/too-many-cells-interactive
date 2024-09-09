@@ -170,6 +170,7 @@ const usePrunedTree = (tree: TMCHierarchyDataNode) => {
             activeFeatures.length ||
             Object.keys(featureHiLoThresholds).length
         ) {
+            console.log(tree);
             const annotatedTree = updatefeatureHiLos(
                 tree.copy(),
                 featureHiLoThresholds,
@@ -600,6 +601,7 @@ const getMadGroups = (values: number[], binCount = 15, maxSize?: number) => {
     // Therefore binSize is guaranteed to be >= 0.
     const binSize =
         (greatestPositiveMadDistance - greatestNegativeMadDistance) / binCount;
+    console.log("binSize:", binSize)
 
     return range(
         greatestNegativeMadDistance,
@@ -683,7 +685,6 @@ const getFeatureDistributions = (
     });
 
     console.log(distributions);
-
     return distributions;
 };
 

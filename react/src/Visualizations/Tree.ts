@@ -346,7 +346,7 @@ const showToolTip = (
         .data(
             colorScaleKey === 'featureAverage' && activeFeatures.length
                 ? [data.data.featureAverage.average.quantity,
-                data.data.originalNodeId]
+                data.data.featureHiLos]
                 : [],
             Math.random
         )
