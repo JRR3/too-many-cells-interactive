@@ -31,9 +31,10 @@ const collectRows = (
 };
 
 const toCsv = (rows: ExportRow[]): string => {
-  const header = 'barcode,leaf_node_id';
+  const header = 'barcode,leaf_node_id,leaf_original_node_id';
   const body = rows.map(
-    r => `${r.barcode},${r.leaf_node_id}`).join('\n');
+    r => `${r.barcode},${r.leaf_node_id},${r.leaf_original_node_id}`
+    ).join('\n');
   return `${header}\n${body}\n`;
 };
 
@@ -48,16 +49,21 @@ const useDownloadPrunedLeafCells = () => {
         || selection.empty()
         || !selection.datum()
     ) {
+      console.error(
+        "Export failed: Tree selection is empty or missing."
+        )
       return;
     }
 
     const tree = selection.datum() as TMCHierarchyDataNode;
     const rows = collectRows(tree);
-
-    saveAs(
-      `data:text/csv,${encodeURIComponent(toCsv(rows))}`,
-      'pruned-leaf-cells.csv'
+    const blob = new Blob(
+        [toCsv(rows)], {
+            type: 'text/csv;charset=utf-8',
+        }
     );
+
+    saveAs(blob, 'pruned-leaf-cells.csv');
   };
 };
 

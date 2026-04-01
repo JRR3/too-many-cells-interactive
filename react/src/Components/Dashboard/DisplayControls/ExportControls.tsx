@@ -28,12 +28,14 @@ const ExportControls: React.FC = () => {
 
     const downloadMeta = useDownloadNodeMeta();
 
+    const downloadPrunedLeafCell = useDownloadPrunedLeafCells();
+
     const downloads: Record<string, () => void> = useMemo(() => {
         return {
             exportClusterTree: downloadMeta.bind(null, 'cluster'),
             exportCsv: downloadMeta.bind(null, 'csv'),
             exportJson: downloadMeta.bind(null, 'json'),
-            exportPrunedLeafCells: useDownloadPrunedLeafCells,
+            exportPrunedLeafCells: downloadPrunedLeafCell,
             exportPng: downloadPng.bind(
                 null,
                 colorScale,
@@ -52,7 +54,14 @@ const ExportControls: React.FC = () => {
                 activeFeatures
             ),
         };
-    }, [activeFeatures, colorScale, downloadMeta, selector, state]);
+    }, [
+        activeFeatures,
+        colorScale,
+        downloadMeta,
+        downloadPrunedLeafCell,
+        selector,
+        state,
+    ]);
 
     const items = useMemo(() => {
         return [
