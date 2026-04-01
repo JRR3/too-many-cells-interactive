@@ -6,4 +6,5 @@ export { default as useElementResize } from './useEelementResize';
 export { default as useExportState } from './useExportState';
 export { default as usePrunedTree } from './usePrunedTree';
 export { default as useSelectTree } from './useSelectTree';
+export { default as useDownloadPrunedLeafCells } from './useDownloadPrunedLeafCells';
 export * from './useScale';

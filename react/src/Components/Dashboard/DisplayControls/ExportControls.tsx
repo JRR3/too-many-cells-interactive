@@ -5,6 +5,7 @@ import {
     useAppSelector,
     useColorScale,
     useDownloadNodeMeta,
+    useDownloadPrunedLeafCells,
     useExportState,
     useSelectTree,
 } from '../../../hooks';
@@ -32,6 +33,7 @@ const ExportControls: React.FC = () => {
             exportClusterTree: downloadMeta.bind(null, 'cluster'),
             exportCsv: downloadMeta.bind(null, 'csv'),
             exportJson: downloadMeta.bind(null, 'json'),
+            exportPrunedLeafCells: useDownloadPrunedLeafCells,
             exportPng: downloadPng.bind(
                 null,
                 colorScale,
@@ -65,6 +67,10 @@ const ExportControls: React.FC = () => {
             {
                 title: 'Export as Cluster Tree JSON',
                 id: 'exportClusterTree',
+            },
+            {
+                title: 'Export Pruned Leaf Cells as CSV',
+                id: 'exportPrunedLeafCells',
             },
             {
                 title: 'Export as PNG',
