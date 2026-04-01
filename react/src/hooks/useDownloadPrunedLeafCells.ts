@@ -6,18 +6,7 @@ type ExportRow = {
   barcode: string;
   leaf_node_id: number;           // current pruned visible node id
   leaf_original_node_id: number;  // original node id of visible terminal node
-};
-
-const collectItemsFromSubtree = (
-    node: TMCHierarchyDataNode): any[] => {
-  const ownItems = node.data.items ?? [];
-
-  if (!node.children || node.children.length === 0) {
-    return ownItems;
-  }
-
-  return node.children.flatMap(
-    child => collectItemsFromSubtree(child));
+  original_leaf_node_id: number;  // original node id of the leaf
 };
 
 const collectRowsFromVisibleAndOriginal = (
@@ -41,13 +30,16 @@ const collectRowsFromVisibleAndOriginal = (
       return;
     }
 
-    const items = collectItemsFromSubtree(sourceNode);
+    sourceNode.leaves().forEach(origLeaf => {
+      const originalLeafNodeId = origLeaf.data.originalNodeId;
 
-    items.forEach(item => {
-      rows.push({
-        barcode: item._barcode.unCell,
-        leaf_node_id: prunedNodeId,
-        leaf_original_node_id: originalNodeId,
+      (origLeaf.data.items ?? []).forEach(item => {
+        rows.push({
+          barcode: item._barcode.unCell,
+          leaf_node_id: prunedNodeId,
+          leaf_original_node_id: originalNodeId,
+          original_leaf_node_id: originalLeafNodeId,
+        });
       });
     });
   });
@@ -55,12 +47,13 @@ const collectRowsFromVisibleAndOriginal = (
   return rows;
 };
 
-
-
 const toCsv = (rows: ExportRow[]): string => {
-  const header = 'barcode,leaf_node_id,leaf_original_node_id';
+  const header = 'barcode,'
+    + 'leaf_node_id,'
+    + 'leaf_original_node_id,'
+    + 'original_leaf_node_id';
   const body = rows.map(
-    r => `${r.barcode},${r.leaf_node_id},${r.leaf_original_node_id}`
+    r => `${r.barcode},${r.leaf_node_id},${r.leaf_original_node_id},${r.original_leaf_node_id}`
     ).join('\n');
   return `${header}\n${body}\n`;
 };
