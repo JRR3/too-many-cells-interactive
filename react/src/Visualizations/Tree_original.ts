@@ -282,23 +282,17 @@ const showToolTip = (
                 ['Node Id', data.data.originalNodeId],
                 [
                     'Distance',
-                    data.data.distance
-                        ? formatDigit(data.data.distance)
-                        : 'null',
+                    data.data.distance == 1
+                        ? 'RNA'
+                        :
+                        data.data.distance == 0
+                            ? 'ATAC'
+                            :
+                            data.data.distance
+                                ? formatDigit(data.data.distance)
+                                : 'null',
                 ],
-                ['Observation Count',
-                    data.value!.toLocaleString()],
-                ['Total Fragments',
-                    (
-                        data.data.totalFragments ?? 0
-                    ).toLocaleString()],
-                ['Log1p(Total Fragments)',
-                    formatDigit(
-                        Math.log1p(
-                            data.data.totalFragments ?? 0
-                        )
-                    )
-                ],
+                ['Observation Count', data.value!.toLocaleString()],
             ])
         )
         .join('li')
@@ -358,7 +352,7 @@ const showToolTip = (
         .data(
             colorScaleKey === 'featureAverage' && activeFeatures.length
                 ? [data.data.featureAverage.average.quantity,
-                data.data.featureHiLos]
+                data.data.originalNodeId]
                 : [],
             Math.random
         )

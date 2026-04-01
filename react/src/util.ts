@@ -164,6 +164,47 @@ export const pruneTreeByMinValue = (
     return newTree;
 };
 
+export const getTotalFragments = (
+    node: TMCHierarchyDataNode) =>
+  node.descendants().map(v => v.data.totalFragments ?? 0);
+
+export const getLog1pTotalFragments = (
+    node: TMCHierarchyDataNode) =>
+  node.descendants().map(
+    v => Math.log1p(v.data.totalFragments ?? 0)
+);
+
+export const pruneTreeByMinTotalFragments = (
+    tree: TMCHierarchyDataNode,
+    minTotalFragments: number) => {
+  const newTree = tree.copy().eachBefore(d => {
+    if ((d.data.totalFragments ?? 0) < minTotalFragments) {
+      if (d.parent) {
+        d.parent.children = undefined;
+      }
+    }
+  });
+
+  return newTree;
+};
+
+export const pruneTreeByMinLog1pTotalFragments = (
+    tree: TMCHierarchyDataNode,
+    minLog1pTotalFragments: number) => {
+  const newTree = tree.copy().eachBefore(d => {
+    if (
+        Math.log1p(d.data.totalFragments ?? 0) <
+        minLog1pTotalFragments
+    ) {
+      if (d.parent) {
+        d.parent.children = undefined;
+      }
+    }
+  });
+
+  return newTree;
+};
+
 /**
  * Prune the tree by maximum depth
  * @param {TMCHierarchyDataNode} tree
@@ -486,6 +527,8 @@ export const runClickPrunes = (
 export const prunerMap = {
     minDepth: pruneTreeByDepth,
     minSize: pruneTreeByMinValue,
+    minTotalFragments: pruneTreeByMinTotalFragments,
+    minLog1pTotalFragments: pruneTreeByMinLog1pTotalFragments,
     minDistance: pruneTreeByMinDistance,
     minDistanceSearch: pruneTreeByMinDistanceSearch,
     setCollapsedNode: collapseNode,

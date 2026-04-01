@@ -10,7 +10,11 @@ export interface DistributionMetadata {
     plainGroups: CumSumBin[];
 }
 
-type DistributionKeys = 'distance' | 'distanceSearch' | 'size';
+type DistributionKeys = 'distance'
+                        | 'distanceSearch'
+                        | 'size'
+                        | 'totalFragments'
+                        | 'log1pTotalFragments';
 
 type DetailedDistributions = { [K in DistributionKeys]: DistributionMetadata };
 
@@ -38,12 +42,16 @@ const initialState: PruneSliceState = {
         distance: {} as DistributionMetadata,
         distanceSearch: {} as DistributionMetadata,
         size: {} as DistributionMetadata,
+        totalFragments: {} as DistributionMetadata,
+        log1pTotalFragments: {} as DistributionMetadata,
     },
     pruneHistory: [makeFreshPruneStep()],
 };
 
 export type ValuePruneType =
     | 'minSize'
+    | 'minTotalFragments'
+    | 'minLog1pTotalFragments'
     | 'minDistance'
     | 'minDistanceSearch'
     | 'minDepth';

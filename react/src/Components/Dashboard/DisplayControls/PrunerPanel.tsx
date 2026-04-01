@@ -72,6 +72,14 @@ const PrunerPanel: React.FC = () => {
                 id: 'minSize',
             },
             {
+                title: 'Prune by Total Fragments',
+                id: 'minTotalFragments',
+            },
+            {
+                title: 'Prune by log1p(Total Fragments)',
+                id: 'minLog1pTotalFragments',
+            },
+            {
                 title: 'Prune by Depth',
                 id: 'minDepth',
             },
@@ -104,6 +112,8 @@ const PrunerPanel: React.FC = () => {
             distance: distanceMeta,
             distanceSearch: distanceSearchMeta,
             size: sizeMeta,
+            totalFragments: totalFragmentsMeta,
+            log1pTotalFragments: log1pTotalFragmentsMeta,
         },
     } = useAppSelector(selectPruneSlice);
 
@@ -125,7 +135,7 @@ const PrunerPanel: React.FC = () => {
     return (
         <Column xs={12}>
             <WidgetTitle
-                caption='Reduce node count by distance, size, or depth'
+                caption='Reduce node count by distance, size, total fragments or depth'
                 helpText={
                     <Text fontSize='12px'>
                         Collapse children nodes into parent nodes, shrinking the
@@ -173,6 +183,36 @@ const PrunerPanel: React.FC = () => {
                     value={getPrunerVal('minSize')}
                     viewType={step.valuePruner.displayValue || 'plain'}
                     xLabel='Size'
+                />
+                <SmartPruner
+                    expanded={selected === 'minTotalFragments'}
+                    id='minTotalFragments'
+                    label='Prune by Total Fragments'
+                    madValues={totalFragmentsMeta.madGroups}
+                    madSize={totalFragmentsMeta.mad}
+                    median={totalFragmentsMeta.median}
+                    onSubmit={prune('minTotalFragments')}
+                    onViewTypeChange={updatePruneValueDisplayType}
+                    plainValues={totalFragmentsMeta.plainGroups}
+                    tipText='Select a minimum observation count for each node'
+                    value={getPrunerVal('minTotalFragments')}
+                    viewType={step.valuePruner.displayValue || 'plain'}
+                    xLabel='Total Fragments'
+                />
+                <SmartPruner
+                    expanded={selected === 'minLog1pTotalFragments'}
+                    id='minLog1pTotalFragments'
+                    label='Prune by Log1p Total Fragments'
+                    madValues={log1pTotalFragmentsMeta.madGroups}
+                    madSize={log1pTotalFragmentsMeta.mad}
+                    median={log1pTotalFragmentsMeta.median}
+                    onSubmit={prune('minLog1pTotalFragments')}
+                    onViewTypeChange={updatePruneValueDisplayType}
+                    plainValues={log1pTotalFragmentsMeta.plainGroups}
+                    tipText='Select a minimum observation count for each node'
+                    value={getPrunerVal('minLog1pTotalFragments')}
+                    viewType={step.valuePruner.displayValue || 'plain'}
+                    xLabel='Log1p Total Fragments'
                 />
                 <SmartPruner
                     expanded={selected === 'minDistance'}

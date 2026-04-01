@@ -1,4 +1,5 @@
-FROM node:18.7-buster
+#FROM node:18.7-buster
+FROM node:18-bookworm
 
 WORKDIR /usr/app
 

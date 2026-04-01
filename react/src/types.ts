@@ -25,6 +25,7 @@ export interface TMCNodeItem extends RoseNodeItem {
 export interface RoseNodeObj {
     _item: RoseNodeItem[] | null;
     _distance: number | null;
+    _fragments?: number | null;
     _significance: number | null;
 }
 
@@ -50,6 +51,11 @@ export interface TMCFlatNode {
     parentId: string | undefined;
     significance: number | null;
     userAnnotation: AttributeMap;
+    //Extract from cluster_tree.json
+    fragments?: number | null;
+    //Aggregate over the subtree for this node.
+    totalFragments?: number;
+    log1pTotalFragments?: number;
 }
 
 export interface TMCNode extends TMCFlatNode {

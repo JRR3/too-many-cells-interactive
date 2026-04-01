@@ -34,10 +34,14 @@ import {
     getEntries,
     getMAD,
     getSizes,
+    getTotalFragments,
+    getLog1pTotalFragments,
     madCountToValue,
     pruneTreeByMinDistance,
     pruneTreeByMinDistanceSearch,
     pruneTreeByMinValue,
+    pruneTreeByMinTotalFragments,
+    pruneTreeByMinLog1pTotalFragments,
     runPrunes,
     valueToMadCount,
 } from '../util';
@@ -330,7 +334,8 @@ export const addUserAnnotations = (
  * @param {TMCHierarchyDataNode} nodes the tree
  * @returns {Distributions}
  */
-const buildPruneMetadata = (nodes: TMCHierarchyDataNode): Distributions => ({
+const buildPruneMetadata = (
+    nodes: TMCHierarchyDataNode): Distributions => ({
     depthGroups: getDepthGroups(nodes),
     distance: {
         mad: compose(getMAD, getDistances)(nodes),
@@ -375,6 +380,22 @@ const buildPruneMetadata = (nodes: TMCHierarchyDataNode): Distributions => ({
         madGroups: getSizeMadGroups(nodes),
         median: median(nodes.descendants().map(v => v.value!))!,
         plainGroups: getSizeGroups(nodes),
+    },
+    totalFragments: {
+        mad: compose(getMAD, getTotalFragments)(nodes),
+        madGroups: getTotalFragmentMadGroups(nodes),
+        median: median(nodes.descendants().map(
+            v => v.data.totalFragments ?? 0
+        ))!,
+        plainGroups: getTotalFragmentGroups(nodes),
+    },
+    log1pTotalFragments: {
+        mad: compose(getMAD, getLog1pTotalFragments)(nodes),
+        madGroups: getLog1pTotalFragmentMadGroups(nodes),
+        median: median(nodes.descendants().map(
+            v => Math.log1p(v.data.totalFragments ?? 0)
+        ))!,
+        plainGroups: getLog1pTotalFragmentGroups(nodes),
     },
 });
 
@@ -505,6 +526,108 @@ const getMaxCutoffNodeSize = (tree: TMCHierarchyDataNode) => {
         return min(tree.children.map(d => d.value || 0));
     } else return 0;
 };
+
+/**
+ * 
+ * This is for the Total Fragments
+ */
+
+const getMaxCutoffTotalFragments = (
+    tree: TMCHierarchyDataNode) => {
+  if (tree.children) {
+    return min(
+        tree.children.map(d => d.data.totalFragments ?? 0)
+    );
+  } else {
+    return 0;
+  }
+};
+
+const getTotalFragmentGroups = (
+  tree: TMCHierarchyDataNode,
+  binCount = 50
+): CumSumBin[] => {
+  const maxFragments = getMaxCutoffTotalFragments(tree)!;
+  const bounds = ticks(0, maxFragments, binCount);
+
+  return bounds.map(value => ({
+    value,
+    count: pruneTreeByMinTotalFragments(tree, value)
+            .descendants().length,
+  }));
+};
+
+const getTotalFragmentMadGroups = (
+  tree: TMCHierarchyDataNode
+): CumSumBin[] => {
+  const maxFragments = getMaxCutoffTotalFragments(tree)!;
+  const values = tree
+    .descendants()
+    .map(d => d.data.totalFragments ?? 0)
+    .sort((a, b) => (a < b ? -1 : 1));
+
+  const groups = getMadGroups(values, 15, maxFragments);
+
+  return groups.map(b => ({
+    value: b.mads,
+    count: pruneTreeByMinTotalFragments(
+        tree, b.value).descendants().length,
+  }));
+};
+
+/**
+ * 
+ * This is the Log1p version for Total Fragments
+ */
+
+const getMaxCutoffLog1pTotalFragments = (
+    tree: TMCHierarchyDataNode) => {
+  if (tree.children) {
+    return min(
+        tree.children.map(
+            d => Math.log1p(d.data.totalFragments ?? 0)
+        )
+    );
+  } else {
+    return 0;
+  }
+};
+
+const getLog1pTotalFragmentGroups = (
+  tree: TMCHierarchyDataNode,
+  binCount = 50
+): CumSumBin[] => {
+  const maxFragments = getMaxCutoffLog1pTotalFragments(tree)!;
+  const bounds = ticks(0, maxFragments, binCount);
+
+  return bounds.map(value => ({
+    value,
+    count: pruneTreeByMinLog1pTotalFragments(tree, value)
+            .descendants().length,
+  }));
+};
+
+const getLog1pTotalFragmentMadGroups = (
+  tree: TMCHierarchyDataNode
+): CumSumBin[] => {
+  const maxFragments = getMaxCutoffLog1pTotalFragments(tree)!;
+  const values = tree
+    .descendants()
+    .map(d => Math.log1p(d.data.totalFragments ?? 0))
+    .sort((a, b) => (a < b ? -1 : 1));
+
+  const groups = getMadGroups(values, 15, maxFragments);
+
+  return groups.map(b => ({
+    value: b.mads,
+    count: pruneTreeByMinLog1pTotalFragments(
+        tree, b.value).descendants().length,
+  }));
+};
+
+/**
+ * END OF LOG1P Total Fragments
+ */
 
 /**
  * Get the total features in a given cell cluster (leaf node)

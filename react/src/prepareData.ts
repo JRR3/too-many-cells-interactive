@@ -48,7 +48,9 @@ export const getData = async () => {
  */
 export const transformData = (data: RoseNode) => {
     const flat = flatten(data);
-    return buildTree(flat);
+    const tree = buildTree(flat) as HierarchyNode<TMCNode>;
+    addFragmentTotals(tree);
+    return tree;
 };
 
 /**
@@ -129,7 +131,29 @@ export const addLabels = (
 };
 
 /**
- * Transform the raw rose node into an array of flattened nodes suitable to D3's stratification
+ * Function to process fragments
+ */
+
+export const addFragmentTotals = (
+    tree: HierarchyNode<TMCNode>) => {
+        tree.eachAfter(n => {
+            if (n.children && n.children.length > 0) {
+                n.data.totalFragments = n.children.reduce(
+                    (acc, child) => acc + (
+                        child.data.totalFragments ?? 0),
+                        0
+                );
+            } else {
+                n.data.totalFragments = n.data.fragments ?? 0;
+            }
+        }); 
+
+        return tree;
+    };
+
+/**
+ * Transform the raw rose node into an array 
+ * of flattened nodes suitable to D3's stratification
  * @param {RoseNode} data
  * @param {Array<TMCFlatNode>} nodes
  * @param {string} parentId
@@ -158,6 +182,12 @@ const flatten = (
         : null;
     node.distance = meta?._distance ?? null;
     node.significance = meta?._significance ?? null;
+
+    // Addition
+    node.fragments = meta?._fragments ?? null;
+    node.totalFragments = 0;
+    node.log1pTotalFragments = 0;
+
     node.featureHiLos = {};
     node.featureCount = {};
     node.featureAverage = {};
