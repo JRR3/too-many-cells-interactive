@@ -13,9 +13,14 @@ import Button from '../../Button';
 import { WidgetTitle } from '../../Layout';
 import { SelectPanel } from '../..';
 import { selectAnnotationSlice } from '../../../redux/annotationSlice';
+import { TMCHierarchyDataNode } from '../../../types';
+
+type Props = {
+    tree: TMCHierarchyDataNode;
+};
 
 /* Controls for selecting and executing an export */
-const ExportControls: React.FC = () => {
+const ExportControls: React.FC<Props> = ({tree}) => {
     const [panelOpen, setPanelOpen] = useState(false);
 
     const { scale: colorScale } = useColorScale();
@@ -28,14 +33,14 @@ const ExportControls: React.FC = () => {
 
     const downloadMeta = useDownloadNodeMeta();
 
-    const downloadPrunedLeafCell = useDownloadPrunedLeafCells();
+    const downloadPrunedLeafCells = useDownloadPrunedLeafCells(tree);
 
     const downloads: Record<string, () => void> = useMemo(() => {
         return {
             exportClusterTree: downloadMeta.bind(null, 'cluster'),
             exportCsv: downloadMeta.bind(null, 'csv'),
             exportJson: downloadMeta.bind(null, 'json'),
-            exportPrunedLeafCells: downloadPrunedLeafCell,
+            exportPrunedLeafCells: downloadPrunedLeafCells,
             exportPng: downloadPng.bind(
                 null,
                 colorScale,
@@ -58,7 +63,7 @@ const ExportControls: React.FC = () => {
         activeFeatures,
         colorScale,
         downloadMeta,
-        downloadPrunedLeafCell,
+        downloadPrunedLeafCells,
         selector,
         state,
     ]);

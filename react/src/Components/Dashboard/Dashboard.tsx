@@ -135,7 +135,12 @@ const Dashboard: React.FC = () => {
                                 <PruneHistory />
                             </Row>
                             <Row alignItems='flex-start'>
-                                <DisplayControls maxHeight={height} />
+                                {baseTree && (
+                                <DisplayControls
+                                    maxHeight={height}
+                                    tree={baseTree}
+                                />
+                                )}
                             </Row>
                         </Column>
                     </Row>

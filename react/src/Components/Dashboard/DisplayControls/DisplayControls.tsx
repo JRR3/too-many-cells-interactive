@@ -1,3 +1,4 @@
+import { TMCHierarchyDataNode } from '../../../types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { hsl } from 'd3-color';
@@ -28,7 +29,10 @@ import PrunerPanel from './PrunerPanel';
 import Legend from './Legend';
 
 /* High-level component containing the display controls seen on the RHS of the app when viewed in a large screen */
-const DisplayControls: React.FC<{ maxHeight?: number }> = ({ maxHeight }) => {
+const DisplayControls: React.FC<{ 
+    maxHeight?: number;
+    tree: TMCHierarchyDataNode;
+}> = ({ maxHeight, tree }) => {
     const {
         scales: {
             branchSizeScale,
@@ -267,7 +271,7 @@ const DisplayControls: React.FC<{ maxHeight?: number }> = ({ maxHeight }) => {
                 </Row>
                 <Row>
                     <PanelContainer>
-                        <ExportControls />
+                        <ExportControls tree={tree} />
                     </PanelContainer>
                 </Row>
                 <Row>
