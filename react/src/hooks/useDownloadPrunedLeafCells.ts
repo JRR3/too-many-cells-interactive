@@ -52,9 +52,22 @@ const toCsv = (rows: ExportRow[]): string => {
     + 'leaf_node_id,'
     + 'leaf_original_node_id,'
     + 'original_leaf_node_id';
-  const body = rows.map(
-    r => `${r.barcode},${r.leaf_node_id},${r.leaf_original_node_id},${r.original_leaf_node_id}`
-    ).join('\n');
+
+  const lines = rows.map(row => {
+    return [
+      row.barcode,
+      row.leaf_node_id,
+      row.leaf_original_node_id,
+      row.original_leaf_node_id,
+    ].join(',');
+  });
+
+  const body = lines.join('\n');
+
+  // const body = rows.map(
+  //   r => `${r.barcode},${r.leaf_node_id},${r.leaf_original_node_id},${r.original_leaf_node_id}`
+  //   ).join('\n');
+
   return `${header}\n${body}\n`;
 };
 
